@@ -26,39 +26,44 @@ jobs:
           node-version: lts/*
       - name: Download history files
         run: >
-          ARTIFACT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=allure-results" 
+          ARTIFACT_ID=$(curl -L
+          -H "Accept: application/vnd.github+json"
+          -H "X-GitHub-Api-Version: 2022-11-28"
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=allure-results"
           | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).artifacts?.[0]?.id ?? undefined))")
           &&
-          curl -L -H "Accept: application/vnd.github+json" 
+          curl -L 
+          -H "Accept: application/vnd.github+json"
           -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}"
-          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${ARTIFACT_ID}/zip" 
-          -o artifact.zip
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$ARTIFACT_ID/zip"
+          --output artifact.zip
           &&
-          REPORT_ID=$(curl -L 
-          -H "Accept: application/vnd.github+json" 
-          -H "X-GitHub-Api-Version: 2022-11-28" 
+          REPORT_ID=$(curl -L
+          -H "Accept: application/vnd.github+json"
+          -H "X-GitHub-Api-Version: 2022-11-28"
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=github-pages"
           | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).artifacts?.[0]?.id ?? undefined))")
           &&
-          curl -L -H "Accept: application/vnd.github+json" 
+          curl -L
+          -H "Accept: application/vnd.github+json"
           -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}"
-          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${REPORT_ID}/zip" 
-          -o pages.zip
+          -H "X-GitHub-Api-Version: 2022-11-28"
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$REPORT_ID/zip"
+          --output pages.zip
       - name: Unzip Allure results
         run: |
           { mkdir allure-results && unzip artifact.zip -d allure-results; } || echo "No allure-results artifact found"
       - name: Unzip GitHub Pages report
         run: |
           { mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xzf old_pages/artifact.tar -C pages_history; } || echo "No GitHub Pages artifact found"
-      - name: Copy history files to the current report
-        run: mkdir -p allure-results/history && cp -r pages_history/history/* allure-results/history/ || echo "No GitHub Pages artifact found, skipping history copy"    
+      - name: Copy allure-results to pages_history
+        run: >
+          cp -r pages_history/history/* allure-results &&        
+          cp -r pages_history/history allure-results 
       - name: Store updated Allure results
         uses: actions/upload-artifact@v4
         with:
-          name: allure-history
+          name: allure-results
           path: allure-results
           retention-days: 30
       
@@ -69,33 +74,33 @@ jobs:
     needs: download-history
     name: Run Playwright tests
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Download Allure Results History
-      uses: actions/download-artifact@v4
-      continue-on-error: true
-    - name: all tests
-      if: "github.event.inputs.deployment_target == 'all tests'"
-      run: npx playwright test
-    - name: Upload Playwright report
-      uses: actions/upload-artifact@v4
-      with:
-        name: playwright-report
-        path: playwright-report
-        retention-days: 30
-    - name: Upload Allure Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-results
-        path: allure-results
-        retention-days: 30
-        overwrite: true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Download Allure Results History
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+      - name: all tests
+        if: "github.event.inputs.deployment_target == 'all tests'"
+        run: npx playwright test
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 30
+      - name: Upload Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 30
+          overwrite: true
 
   
   generate-allure-report:
