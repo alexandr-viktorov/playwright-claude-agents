@@ -46,7 +46,7 @@ jobs:
           { mkdir allure-results && unzip artifact.zip -d allure-results; } || echo "No allure-results artifact found"
       - name: Unzip GitHub Pages report
         run: |
-          { mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xzf old_pages/_site.tar.gz -C pages_history; } || echo "No GitHub Pages artifact found"
+          { mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xzf old_pages/artifact.tar -C pages_history; } || echo "No GitHub Pages artifact found"
       - name: Copy history files to the current report
         run: mkdir -p allure-results/history && cp -r pages_history/history/* allure-results/history/ || echo "No GitHub Pages artifact found, skipping history copy"    
       - name: Store updated Allure results
