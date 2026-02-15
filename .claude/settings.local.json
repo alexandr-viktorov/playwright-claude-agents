@@ -17,7 +17,10 @@
       "mcp__playwright-test__browser_verify_element_visible",
       "mcp__playwright-test__browser_verify_text_visible",
       "mcp__playwright-test__generator_read_log",
-      "mcp__playwright-test__generator_write_test"
+      "mcp__playwright-test__generator_write_test",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
