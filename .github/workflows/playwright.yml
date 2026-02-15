@@ -1,9 +1,15 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
+      inputs:
+          deployment_target:
+              description: 'Deployment target environment'
+              required: true
+              default: 'all tests'
+              type: choice
+              options:    
+              - all tests
+
 
 permissions:
   contents: read
@@ -74,22 +80,23 @@ jobs:
     - name: Download Allure Results History
       uses: actions/download-artifact@v4
       continue-on-error: true
-    - name: Run Playwright tests
+    - name: all tests
+      if: "github.event.inputs.deployment_target == 'all tests'"
       run: npx playwright test
     - name: Upload Playwright report
       uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        path: playwright-report/
+        path: playwright-report
         retention-days: 30
-    - name: Upload Allure results
+    - name: Upload Allure Report
       uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
       with:
         name: allure-results
-        path: allure-results/
+        path: allure-results
         retention-days: 30
+        overwrite: true
+
   
   generate-allure-report:
     needs: test
