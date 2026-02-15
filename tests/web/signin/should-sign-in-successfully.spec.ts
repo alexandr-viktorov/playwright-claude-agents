@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import * as allure from 'allure-js-commons';
-import { LoginPage } from '../../pages/LoginPage';
-import { InventoryPage } from '../../pages/InventoryPage';
+import { LoginPage } from '../../../pages/LoginPage';
+import { InventoryPage } from '../../../pages/InventoryPage';
 
 test.describe('Successful Sign-In', () => {
   test('should sign in successfully with standard_user credentials', async ({ page }) => {

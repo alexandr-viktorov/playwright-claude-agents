@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 import * as allure from 'allure-js-commons';
-import { LoginPage } from '../../pages/LoginPage';
-import { InventoryPage } from '../../pages/InventoryPage';
-import { ProductPage } from '../../pages/ProductPage';
-import { CartPage } from '../../pages/CartPage';
-import { CheckoutInfoPage } from '../../pages/CheckoutInfoPage';
-import { CheckoutOverviewPage } from '../../pages/CheckoutOverviewPage';
-import { CheckoutCompletePage } from '../../pages/CheckoutCompletePage';
+import { LoginPage } from '../../../pages/LoginPage';
+import { InventoryPage } from '../../../pages/InventoryPage';
+import { ProductPage } from '../../../pages/ProductPage';
+import { CartPage } from '../../../pages/CartPage';
+import { CheckoutInfoPage } from '../../../pages/CheckoutInfoPage';
+import { CheckoutOverviewPage } from '../../../pages/CheckoutOverviewPage';
+import { CheckoutCompletePage } from '../../../pages/CheckoutCompletePage';
 
 test.describe('Purchase Flow', () => {
   test('should complete a full purchase of Sauce Labs Bike Light', async ({ page }) => {

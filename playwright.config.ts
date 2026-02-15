@@ -39,16 +39,19 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      testMatch: '**/web/**/*.spec.ts',
       use: { ...devices['Desktop Chrome'] },
     },
 
     {
       name: 'firefox',
+      testMatch: '**/web/**/*.spec.ts',
       use: { ...devices['Desktop Firefox'] },
     },
 
     {
       name: 'webkit',
+      testMatch: '**/web/**/*.spec.ts',
       use: { ...devices['Desktop Safari'] },
     },
 
