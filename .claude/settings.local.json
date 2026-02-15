@@ -7,7 +7,17 @@
       "mcp__playwright-test__browser_close",
       "mcp__playwright-test__test_run",
       "mcp__playwright-test__test_debug",
-      "Bash(npx playwright test:*)"
+      "Bash(npx playwright test:*)",
+      "mcp__playwright-test__browser_type",
+      "mcp__playwright-test__browser_click",
+      "mcp__playwright-test__browser_fill_form",
+      "mcp__playwright-test__generator_setup_page",
+      "mcp__playwright-test__browser_verify_value",
+      "mcp__playwright-test__browser_evaluate",
+      "mcp__playwright-test__browser_verify_element_visible",
+      "mcp__playwright-test__browser_verify_text_visible",
+      "mcp__playwright-test__generator_read_log",
+      "mcp__playwright-test__generator_write_test"
     ]
   },
   "enableAllProjectMcpServers": true,
