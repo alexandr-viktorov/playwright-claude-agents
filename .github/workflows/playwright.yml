@@ -4,16 +4,22 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   download-history:
     runs-on: ubuntu-latest
     steps:
-      - name: setup Typescript
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
       - name: Download history files
-        run: |
+        run: >
           ARTIFACT_ID=$(curl -L 
           -H "Accept: application/vnd.github+json" 
           -H "X-GitHub-Api-Version: 2022-11-28" 
@@ -28,7 +34,7 @@ jobs:
           REPORT_ID=$(curl -L 
           -H "Accept: application/vnd.github+json" 
           -H "X-GitHub-Api-Version: 2022-11-28" 
-          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=gethub-pages"
+          "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=github-pages"
           | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).artifacts[0].id))")
           &&
           curl -L -H "Accept: application/vnd.github+json" 
@@ -36,24 +42,17 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${REPORT_ID}/zip" 
           -o pages.zip
       - name: Unzip Allure results
-        run: mkdir allure-results && unzip artifact.zip -d allure-results || echo "No allure-results artifact found"
+        run: |
+          { mkdir allure-results && unzip artifact.zip -d allure-results; } || echo "No allure-results artifact found"
       - name: Unzip GitHub Pages report
         run: |
-          mkdir old_pages && unzip pages.zip -d old_pages
-          &&
-          tar -xzf old_pages/_site.tar.gz -C pages_history      
-          || echo "No GitHub Pages artifact found"
+          { mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xzf old_pages/_site.tar.gz -C pages_history; } || echo "No GitHub Pages artifact found"
       - name: Copy history files to the current report
-        run: |
-          if [ -d "pages_history" ]; then
-            cp -r pages_history/history/* allure-results/history/"
-          else
-            echo "No GitHub Pages artifact found, skipping history copy"
-          fi
+        run: mkdir -p allure-results/history && cp -r pages_history/history/* allure-results/history/ || echo "No GitHub Pages artifact found, skipping history copy"    
       - name: Store updated Allure results
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-history
           path: allure-results
           retention-days: 30
       
@@ -72,6 +71,12 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+    - name: Download Allure history
+      uses: actions/download-artifact@v4
+      with:
+        name: allure-history
+        path: allure-results
+      continue-on-error: true
     - name: Run Playwright tests
       run: npx playwright test
     - name: Upload Playwright report
@@ -99,12 +104,10 @@ jobs:
         with:
           distribution: 'microsoft'
           java-version: '17'
-      - name: Insrall Allure Commandline
-        run: |
-          sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz 
-          && 
-          sudo tar -zxvf allure-2.23.1.tgz -C /opt/ 
-          && 
+      - name: Install Allure Commandline
+        run: >
+          sudo wget https://github.com/allure-framework/allure2/releases/download/2.23.1/allure-2.23.1.tgz &&
+          sudo tar -zxvf allure-2.23.1.tgz -C /opt/ &&
           sudo ln -s /opt/allure-2.23.1/bin/allure /usr/bin/allure
       - name: Download Allure results
         uses: actions/download-artifact@v4
@@ -124,8 +127,10 @@ jobs:
     steps:
       - name: Download generated Allure report
         uses: actions/download-artifact@v4
-      - name: Uplload pages artifact
+      - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
