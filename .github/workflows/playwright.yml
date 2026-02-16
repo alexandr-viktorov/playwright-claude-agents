@@ -59,8 +59,9 @@ jobs:
           { mkdir allure-results && unzip artifact.zip -d allure-results; } || echo "No allure-results artifact found"
         continue-on-error: true
       - name: Unzip GitHub Pages report
-        run: |
-          { mkdir old_pages pages_history && unzip pages.zip -d old_pages && tar -xzf old_pages/artifact.tar -C pages_history; } || echo "No GitHub Pages artifact found"
+        run:  mkdir old_pages pages_history && unzip pages.zip -d old_pages || echo "No GitHub Pages artifact found"
+      - name: Unzip GitHub Pages report from old_pages/artifact.tar
+        run: tar -zxf old_pages/artifact.tar -C pages_history || echo "No GitHub Pages artifact found"
         continue-on-error: true
       - name: Copy allure-results to pages_history
         run: >
