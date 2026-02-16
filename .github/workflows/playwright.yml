@@ -44,7 +44,7 @@ jobs:
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts?name=github-pages"
           | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).artifacts?.[0]?.id ?? undefined))")
           &&
-          curl -L
+          curl -L 
           -H "Accept: application/vnd.github+json"
           -H "Authorization: Bearer ${{ secrets.ACTION_TOKEN }}"
           "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$REPORT_ID/zip"
