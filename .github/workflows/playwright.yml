@@ -61,7 +61,7 @@ jobs:
       - name: Unzip GitHub Pages report
         run:  mkdir old_pages pages_history && unzip pages.zip -d old_pages || echo "No GitHub Pages artifact found"
       - name: Unzip GitHub Pages report from old_pages/artifact.tar
-        run: tar -zxf old_pages/artifact.tar -C pages_history || echo "No GitHub Pages artifact found"
+        run: tar -xf old_pages/artifact.tar -C pages_history || echo "No GitHub Pages artifact found"
         continue-on-error: true
       - name: Copy allure-results to pages_history
         run: >
