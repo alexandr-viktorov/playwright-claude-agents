@@ -1,10 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../../skills/fixtures';
 import * as allure from 'allure-js-commons';
-import { LoginPage } from '../../../pages/LoginPage';
-import { InventoryPage } from '../../../pages/InventoryPage';
 
 test.describe('Successful Sign-In', () => {
-  test('should sign in successfully with standard_user credentials', async ({ page }) => {
+  test('should sign in successfully with standard_user credentials', async ({
+    loginPage,
+    inventoryPage,
+    page,
+  }) => {
     await allure.epic('Authentication');
     await allure.feature('Sign In');
     await allure.story('Successful login with valid credentials');
@@ -12,9 +14,6 @@ test.describe('Successful Sign-In', () => {
     await allure.description(
       'Verify that a standard user can sign in with valid credentials and is redirected to the inventory page.'
     );
-
-    const loginPage = new LoginPage(page);
-    const inventoryPage = new InventoryPage(page);
 
     await loginPage.open();
     await loginPage.login('standard_user', 'secret_sauce');

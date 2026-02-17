@@ -1,15 +1,17 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../../skills/fixtures';
 import * as allure from 'allure-js-commons';
-import { LoginPage } from '../../../pages/LoginPage';
-import { InventoryPage } from '../../../pages/InventoryPage';
-import { ProductPage } from '../../../pages/ProductPage';
-import { CartPage } from '../../../pages/CartPage';
-import { CheckoutInfoPage } from '../../../pages/CheckoutInfoPage';
-import { CheckoutOverviewPage } from '../../../pages/CheckoutOverviewPage';
-import { CheckoutCompletePage } from '../../../pages/CheckoutCompletePage';
 
 test.describe('Purchase Flow', () => {
-  test('should complete a full purchase of Sauce Labs Bike Light', async ({ page }) => {
+  test('should complete a full purchase of Sauce Labs Bike Light', async ({
+    loginPage,
+    inventoryPage,
+    productPage,
+    cartPage,
+    checkoutInfoPage,
+    checkoutOverviewPage,
+    checkoutCompletePage,
+    page,
+  }) => {
     await allure.epic('E-Commerce');
     await allure.feature('Purchase Flow');
     await allure.story('Complete purchase of a single item');
@@ -17,14 +19,6 @@ test.describe('Purchase Flow', () => {
     await allure.description(
       'Verify that a user can sign in, add Sauce Labs Bike Light to cart, complete checkout with user info, and finish the purchase successfully.'
     );
-
-    const loginPage = new LoginPage(page);
-    const inventoryPage = new InventoryPage(page);
-    const productPage = new ProductPage(page);
-    const cartPage = new CartPage(page);
-    const checkoutInfoPage = new CheckoutInfoPage(page);
-    const checkoutOverviewPage = new CheckoutOverviewPage(page);
-    const checkoutCompletePage = new CheckoutCompletePage(page);
 
     await allure.step('Sign in with standard_user credentials', async () => {
       await loginPage.open();
